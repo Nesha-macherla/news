@@ -204,5 +204,7 @@ def filter_articles():
 def health_check():
     """Simple health check endpoint to verify API is running"""
     return jsonify({'status': 'healthy', 'message': 'API service is running'}), 200
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
+
