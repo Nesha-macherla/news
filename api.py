@@ -212,6 +212,7 @@ def filter_articles():
     except Exception as e:
         logger.error(f"Error filtering articles: {e}")
         return jsonify({'error': str(e)}), 500
+
 @app.route('/health', methods=['GET'])
 def health_check():
     """Simple health check endpoint to verify API is running"""
