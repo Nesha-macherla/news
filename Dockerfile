@@ -29,3 +29,5 @@ chmod +x /app/start.sh
 
 # Command to run our startup script
 CMD ["/app/start.sh"]
+CMD gunicorn --bind 0.0.0.0:5000 api:app & streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0
+
