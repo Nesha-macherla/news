@@ -10,7 +10,14 @@ COPY . /app
 # Set environment variable for NLTK
 ENV NLTK_DATA=/app/nltk_data
 
+# Set a writable cache directory for Matplotlib
 ENV MPLCONFIGDIR=/tmp/matplotlib
+
+# Set a writable cache directory for Fontconfig
+ENV FONTCONFIG_PATH=/etc/fonts
+RUN mkdir -p /tmp/.cache/fontconfig && \
+    chmod -R 777 /tmp/.cache/fontconfig
+
 
 # Ensure directory exists
 RUN mkdir -p /app/nltk_data
