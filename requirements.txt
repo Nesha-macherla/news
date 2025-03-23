@@ -12,3 +12,4 @@ lxml==4.9.3
 urllib3==1.26.16
 python-dotenv==1.0.0
 waitress==2.1.2
+gunicorn
