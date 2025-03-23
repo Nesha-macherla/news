@@ -31,7 +31,8 @@ def get_api_url():
         # Local development
         return "http://localhost:5000/api"
 
-API_URL = get_api_url()
+API_URL = "https://nesha-macherla-company-news.hf.space/api"
+
 
 # Add this after defining API_URL to help debug
 import requests
