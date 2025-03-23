@@ -7,13 +7,15 @@ WORKDIR /app
 # Copy all files
 COPY . /app
 
-# Set environment variable to ensure NLTK uses a writable directory
+# Set environment variable for NLTK
 ENV NLTK_DATA=/app/nltk_data
 
-# Ensure the directory exists
+ENV MPLCONFIGDIR=/tmp/matplotlib
+
+# Ensure directory exists
 RUN mkdir -p /app/nltk_data
 
-# Install dependencies and download NLTK data
+# Install dependencies and download NLTK data **during build** (not at runtime)
 RUN pip install --no-cache-dir -r requirements.txt && \
     python -m nltk.downloader -d /app/nltk_data vader_lexicon punkt stopwords
 
