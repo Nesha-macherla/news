@@ -1,7 +1,9 @@
-title: Company Sentiment Analyzer
+---
+title: Company News Analysis
 emoji: 📊
 colorFrom: blue
 colorTo: indigo
 sdk: docker
-app_port: 8501
-pinned: true
+app_file: app.py
+pinned: false
+---
