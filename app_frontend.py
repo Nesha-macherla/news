@@ -22,11 +22,27 @@ st.set_page_config(
 
 # API endpoint
 
-if os.environ.get("SPACE_ID"):
-    API_URL = "http://localhost:5000/api"
-else:
-    # Local development
-    API_URL = "http://localhost:5000/api"
+def get_api_url():
+    # In Hugging Face Spaces or container environments
+    if os.environ.get("SPACE_ID"):
+        # Try the direct localhost first
+        return "http://127.0.0.1:5000/api"
+    else:
+        # Local development
+        return "http://localhost:5000/api"
+
+API_URL = get_api_url()
+
+# Add this after defining API_URL to help debug
+import requests
+
+try:
+    # Test connection to API on startup
+    health_check = requests.get(API_URL.replace("/api", "/health"))
+    st.sidebar.success(f"Connected to API: {API_URL}")
+except Exception as e:
+    st.sidebar.error(f"API connection error: {str(e)}")
+    st.sidebar.info(f"Using API URL: {API_URL}")
 
 # Custom CSS - 
 st.markdown("""
