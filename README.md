@@ -5,5 +5,9 @@ colorFrom: blue
 colorTo: indigo
 sdk: docker
 app_port: 8501
-pinned: false
+pinned: true
+docker_build:
+  enable_git_lfs: false
+  cuda: false
+  memory: medium+
 ---
