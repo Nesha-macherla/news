@@ -21,14 +21,14 @@ matplotlib.use('Agg')
 
 
 # Set a writable directory for NLTK downloads
-nltk_data_dir = "/app/nltk_data"
-os.makedirs(nltk_data_dir, exist_ok=True)
-nltk.data.path.append(nltk_data_dir)
+NLTK_DIR = "/app/nltk_data"
+os.makedirs(NLTK_DIR, exist_ok=True)
+nltk.data.path.append(NLTK_DIR)
 
 # Download necessary NLTK resources
-nltk.download('vader_lexicon', download_dir=nltk_data_dir, quiet=True)
-nltk.download('punkt', download_dir=nltk_data_dir, quiet=True)
-nltk.download('stopwords', download_dir=nltk_data_dir, quiet=True)
+nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
+nltk.download('punkt', download_dir=NLTK_DIR, quiet=True)
+nltk.download('stopwords', download_dir=NLTK_DIR, quiet=True)
 
 
 stop_words = set(stopwords.words('english'))
