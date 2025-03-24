@@ -43,9 +43,9 @@ os.makedirs(NLTK_DIR, exist_ok=True)
 nltk.data.path.append(NLTK_DIR)
 
 # Download necessary NLTK resources
-nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
-nltk.download('punkt', download_dir=NLTK_DIR, quiet=True)
-nltk.download('stopwords', download_dir=NLTK_DIR, quiet=True)
+#nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
+#nltk.download('punkt', download_dir=NLTK_DIR, quiet=True)
+#nltk.download('stopwords', download_dir=NLTK_DIR, quiet=True)
 
 
 app = Flask(__name__)
