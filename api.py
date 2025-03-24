@@ -14,6 +14,8 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 from nltk.corpus import stopwords
 from bs4 import BeautifulSoup
+
+os.environ["MPLCONFIGDIR"] = "/tmp/matplotlib"
 import matplotlib.pyplot as plt
 import seaborn as sns
 
