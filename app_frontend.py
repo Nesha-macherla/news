@@ -215,7 +215,9 @@ st.sidebar.info(
 
 # Main workflow
 if search_pressed and company_name:
-    st.session_state.company_name = company_name
+    if "analysis_result" not in st.session_state:
+        st.session_state.analysis_result = None  # Avoid reloading unnecessarily
+
     
     with st.spinner(f"Searching for news about {company_name}..."):
         # API request to search for news
