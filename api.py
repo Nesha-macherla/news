@@ -1,6 +1,7 @@
 # api.py
 import logging
 import os
+import time
 from flask import Flask, request, jsonify
 
 # Configure logging
@@ -9,6 +10,18 @@ logger = logging.getLogger(__name__)
 
 # Create Flask app
 app = Flask(__name__)
+
+
+
+@app.before_request
+def start_timer():
+    request.start_time = time.time()
+
+@app.after_request
+def log_response(response):
+    duration = time.time() - request.start_time
+    app.logger.info(f"Processed {request.path} in {duration:.2f}s")
+    return response
 
 # Global variables to hold lazily loaded resources
 scraper = None
