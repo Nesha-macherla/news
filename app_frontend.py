@@ -29,7 +29,7 @@ def get_api_url():
     else:
         return "http://localhost:5000/api"  # Local development
 
-API_URL = get_api_url()
+API_URL = API_URL = "http://localhost:5000/api"
 
 
 
