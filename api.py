@@ -1,64 +1,69 @@
 # api.py
-# Standard Library Imports
 import logging
 import os
-import re
-import time
-import urllib.parse
-from io import BytesIO
-
-# Third-Party Imports
-import pandas as pd
-import requests
-import nltk
-from nltk.sentiment import SentimentIntensityAnalyzer
-from nltk.corpus import stopwords
-from bs4 import BeautifulSoup
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# Flask Imports
 from flask import Flask, request, jsonify
-
-
-# Import existing classes
-from classes import NewsArticle, NewsScraper, SentimentAnalyzer, ArticleQueryEngine, DataVisualizer, TextToSpeechGenerator
-
-# Download NLTK data
-##try:
- ##   nltk.download('vader_lexicon', quiet=True)
-  ##  nltk.download('punkt', quiet=True)
-  ##  nltk.download('stopwords', quiet=True)
-##except Exception as e:
- ##   print(f"Error downloading NLTK resources: {e}")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-# Set a writable directory for NLTK downloads
-NLTK_DIR = "/app/nltk_data"
-os.makedirs(NLTK_DIR, exist_ok=True)
-nltk.data.path.append(NLTK_DIR)
-
-# Download necessary NLTK resources
-#nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
-#nltk.download('punkt', download_dir=NLTK_DIR, quiet=True)
-#nltk.download('stopwords', download_dir=NLTK_DIR, quiet=True)
-
-
+# Create Flask app
 app = Flask(__name__)
 
-# Initialize objects
-scraper = NewsScraper()
-analyzer = SentimentAnalyzer()
-visualizer = DataVisualizer()
-tts_generator = TextToSpeechGenerator()
+# Global variables to hold lazily loaded resources
+scraper = None
+analyzer = None
+visualizer = None
+tts_generator = None
+
+def initialize_resources():
+    """Lazily initialize resources only when needed"""
+    global scraper, analyzer, visualizer, tts_generator
+    
+    if scraper is None:
+        logger.info("Initializing resources...")
+        
+        # Set a writable directory for NLTK downloads
+        NLTK_DIR = "/app/nltk_data"
+        os.makedirs(NLTK_DIR, exist_ok=True)
+        
+        # Import NLTK and download resources
+        import nltk
+        nltk.data.path.append(NLTK_DIR)
+        
+        # Only download if not already present
+        try:
+            nltk.data.find('sentiment/vader_lexicon.zip')
+        except LookupError:
+            nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
+            
+        try:
+            nltk.data.find('tokenizers/punkt')
+        except LookupError:
+            nltk.download('punkt', download_dir=NLTK_DIR, quiet=True)
+            
+        try:
+            nltk.data.find('corpora/stopwords')
+        except LookupError:
+            nltk.download('stopwords', download_dir=NLTK_DIR, quiet=True)
+        
+        # Import classes only when needed
+        from classes import NewsArticle, NewsScraper, SentimentAnalyzer, ArticleQueryEngine, DataVisualizer, TextToSpeechGenerator
+        
+        # Initialize objects
+        scraper = NewsScraper()
+        analyzer = SentimentAnalyzer()
+        visualizer = DataVisualizer()
+        tts_generator = TextToSpeechGenerator()
+        
+        logger.info("Resources initialized successfully")
 
 @app.route('/api/search', methods=['POST'])
 def search_company():
     """Endpoint to search for news about a company"""
+    # Initialize resources if not already done
+    initialize_resources()
+    
     data = request.json
     company_name = data.get('company_name', '')
     num_articles = data.get('num_articles', 10)
@@ -97,15 +102,19 @@ def search_company():
 @app.route('/api/generate_visualization', methods=['POST'])
 def generate_visualization():
     """Endpoint to generate visualizations"""
+    # Initialize resources if not already done
+    initialize_resources()
+    
     data = request.json
     visualization_type = data.get('type', '')
     visualization_data = data.get('data', {})
     
     try:
+        # Import base64 here to avoid importing at module level
+        import base64
+        
         if visualization_type == 'pie_chart':
             chart = visualizer.create_sentiment_pie_chart(visualization_data)
-            # Convert BytesIO to base64 for sending in JSON
-            import base64
             if chart:
                 chart.seek(0)
                 encoded = base64.b64encode(chart.getvalue()).decode('utf-8')
@@ -113,8 +122,6 @@ def generate_visualization():
         
         elif visualization_type == 'topic_chart':
             chart = visualizer.create_topic_sentiment_chart(visualization_data)
-            # Convert BytesIO to base64 for sending in JSON
-            import base64
             if chart:
                 chart.seek(0)
                 encoded = base64.b64encode(chart.getvalue()).decode('utf-8')
@@ -128,6 +135,13 @@ def generate_visualization():
 @app.route('/api/generate_audio', methods=['POST'])
 def generate_audio():
     """Endpoint to generate audio summary"""
+    # Initialize resources if not already done
+    initialize_resources()
+    
+    # Import needed modules here instead of at the top
+    from classes import NewsArticle
+    import base64
+    
     data = request.json
     company_name = data.get('company_name', '')
     analysis_result = data.get('analysis_result', {})
@@ -153,8 +167,6 @@ def generate_audio():
         hindi_summary = analyzer.create_hindi_summary(company_name, analysis_result, article_objects)
         audio_buf = tts_generator.generate_audio(hindi_summary)
         
-        # Convert BytesIO to base64 for sending in JSON
-        import base64
         if audio_buf:
             audio_buf.seek(0)
             encoded = base64.b64encode(audio_buf.getvalue()).decode('utf-8')
@@ -168,6 +180,12 @@ def generate_audio():
 @app.route('/api/filter_articles', methods=['POST'])
 def filter_articles():
     """Endpoint to filter articles"""
+    # Initialize resources if not already done
+    initialize_resources()
+    
+    # Import needed modules here instead of at the top
+    from classes import NewsArticle, ArticleQueryEngine
+    
     data = request.json
     articles = data.get('articles', [])
     query_text = data.get('query_text', '')
@@ -220,4 +238,3 @@ def health_check():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
