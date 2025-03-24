@@ -26,7 +26,7 @@ COPY . /app/
 # Create a startup script
 RUN echo '#!/bin/bash' > /app/start.sh && \
     echo 'echo "Starting API using Gunicorn..."' >> /app/start.sh && \
-    echo 'gunicorn --workers=2 --timeout 600 --bind 0.0.0.0:5000 app:app &' >> /app/start.sh && \
+    echo 'gunicorn --workers=1 --timeout 600 --bind 0.0.0.0:5000 app:app &' >> /app/start.sh && \
     echo 'API_PID=$!' >> /app/start.sh && \
     echo 'echo "Waiting for API to start..."' >> /app/start.sh && \
     echo 'retries=0' >> /app/start.sh && \
