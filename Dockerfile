@@ -25,15 +25,22 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 # Copy application code
 COPY . /app/
 
-# Create startup script
+# Create a startup script
 RUN echo '#!/bin/bash' > /app/start.sh && \
-    echo 'python api.py &' >> /app/start.sh && \
+    echo 'echo "Starting API using Gunicorn..."' >> /app/start.sh && \
+    echo 'gunicorn --workers=1 --timeout 600 --bind 0.0.0.0:5000 api:app &' >> /app/start.sh && \
     echo 'API_PID=$!' >> /app/start.sh && \
     echo 'echo "Waiting for API to start..."' >> /app/start.sh && \
-    echo 'sleep 5' >> /app/start.sh && \
-    echo 'curl -s http://localhost:5000/health || { echo "API failed to start"; exit 1; }' >> /app/start.sh && \
+    echo 'retries=0' >> /app/start.sh && \
+    echo 'while ! curl -s http://localhost:5000/health > /dev/null; do' >> /app/start.sh && \
+    echo '  retries=$((retries+1))' >> /app/start.sh && \
+    echo '  if [ $retries -gt 10 ]; then' >> /app/start.sh && \
+    echo '    echo "API failed to start"; exit 1;' >> /app/start.sh && \
+    echo '  fi' >> /app/start.sh && \
+    echo '  sleep 2' >> /app/start.sh && \
+    echo 'done' >> /app/start.sh && \
     echo 'echo "API started successfully, starting Streamlit..."' >> /app/start.sh && \
-    echo 'streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0 --server.headless true' >> /app/start.sh && \
+    echo 'exec streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0' >> /app/start.sh && \
     chmod +x /app/start.sh
 
 # Expose Flask and Streamlit ports
