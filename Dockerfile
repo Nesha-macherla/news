@@ -6,7 +6,9 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
-
+# Add this to your Dockerfile
+ENV NLTK_DATA=/tmp/nltk_data
+RUN mkdir -p /tmp/nltk_data && chmod 777 /tmp/nltk_data
 # Download NLTK data
 RUN python -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('stopwords')"
 
