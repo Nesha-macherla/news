@@ -28,24 +28,7 @@ def initialize_resources():
         os.makedirs(NLTK_DIR, exist_ok=True)
         
         # Import NLTK and download resources
-        import nltk
-        nltk.data.path.append(NLTK_DIR)
-        
-        # Only download if not already present
-        try:
-            nltk.data.find('sentiment/vader_lexicon.zip')
-        except LookupError:
-            nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
-            
-        try:
-            nltk.data.find('tokenizers/punkt')
-        except LookupError:
-            nltk.download('punkt', download_dir=NLTK_DIR, quiet=True)
-            
-        try:
-            nltk.data.find('corpora/stopwords')
-        except LookupError:
-            nltk.download('stopwords', download_dir=NLTK_DIR, quiet=True)
+
         
         # Import classes only when needed
         from classes import NewsArticle, NewsScraper, SentimentAnalyzer, ArticleQueryEngine, DataVisualizer, TextToSpeechGenerator
