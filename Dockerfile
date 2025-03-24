@@ -25,17 +25,6 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 # Copy application code
 COPY . /app/
 
-# Apply a patch to remove NLTK downloads from runtime code
-RUN sed -i 's/nltk.download(/# nltk.download(/g' api.py
-
-# Add a proper health check endpoint to Flask app (if not already present)
-RUN grep -q "@app.route('/health'" api.py || \
-    echo 'import os' > /tmp/health_endpoint.py && \
-    echo '@app.route("/health")' >> /tmp/health_endpoint.py && \
-    echo 'def health_check():' >> /tmp/health_endpoint.py && \
-    echo '    return jsonify({"status": "healthy"})' >> /tmp/health_endpoint.py && \
-    sed -i "/app = Flask/r /tmp/health_endpoint.py" api.py
-
 # Create startup script
 RUN echo '#!/bin/bash' > /app/start.sh && \
     echo 'python api.py &' >> /app/start.sh && \
