@@ -4,8 +4,8 @@ import threading
 import logging
 import subprocess
 from flask import Flask, request, jsonify
-import streamlit as st
 import requests
+import socket
 
 # Import custom classes
 from classes import NewsScraper, SentimentAnalyzer, DataVisualizer, TextToSpeechGenerator, NewsArticle
@@ -53,9 +53,18 @@ def search_news():
 def health_check():
     return jsonify({'status': 'healthy'}), 200
 
-# Function to Start Streamlit in a Thread
+# Function to Find a Free Port
+def find_free_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("0.0.0.0", 0))
+        return s.getsockname()[1]
+
+# Function to Start Streamlit
 def start_streamlit():
-    subprocess.run(["streamlit", "run", "app_frontend.py", "--server.port", "8501", "--server.address", "0.0.0.0"])
+    streamlit_port = find_free_port()
+    os.environ["STREAMLIT_SERVER_PORT"] = str(streamlit_port)  # Set port as environment variable
+    logger.info(f"Starting Streamlit on port {streamlit_port}...")
+    subprocess.run(["streamlit", "run", "app_frontend.py", "--server.port", str(streamlit_port), "--server.address", "0.0.0.0"])
 
 if __name__ == '__main__':
     # Start Streamlit in a separate thread
