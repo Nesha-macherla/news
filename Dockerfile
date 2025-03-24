@@ -30,5 +30,5 @@ RUN pip install --no-cache-dir -r requirements.txt && \
 EXPOSE 5000 8501
 
 # Start Flask API & Streamlit frontend
-CMD gunicorn --workers=1 --timeout 600 --bind 0.0.0.0:5000 api:app & streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0
+CMD python api.py & streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0
 
