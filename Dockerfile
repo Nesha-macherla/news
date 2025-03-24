@@ -2,21 +2,27 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt ./
+# Set up writable directories
+ENV NLTK_DATA=/tmp/nltk_data
+ENV MPLCONFIGDIR=/tmp/matplotlib
+
+RUN mkdir -p /tmp/nltk_data /tmp/matplotlib && chmod 777 /tmp/nltk_data /tmp/matplotlib
+
+# Install dependencies
+COPY requirements.txt ./ 
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Download necessary NLTK data
+RUN python -c "import nltk; nltk.download('vader_lexicon', download_dir='/tmp/nltk_data'); nltk.download('punkt', download_dir='/tmp/nltk_data'); nltk.download('stopwords', download_dir='/tmp/nltk_data')"
+
+# Copy all project files
 COPY . .
-# Add this to your Dockerfile
-ENV NLTK_DATA=/tmp/nltk_data
-RUN mkdir -p /tmp/nltk_data && chmod 777 /tmp/nltk_data
-# Download NLTK data
-RUN python -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('stopwords')"
 
-# Expose ports for Flask and Streamlit
-EXPOSE 5000 8501
+# Start script for Flask + Streamlit
+RUN echo '#!/bin/bash\n\
+gunicorn -w 2 -b 0.0.0.0:5000 api:app & \n\
+sleep 5  # Wait for API to start \n\
+exec streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0' > start.sh
 
-# Create a script to run both services
-RUN echo '#!/bin/bash\npython api.py &\nstreamlit run app_frontend.py' > start.sh
 RUN chmod +x start.sh
-
 CMD ["./start.sh"]
