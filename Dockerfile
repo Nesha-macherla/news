@@ -22,6 +22,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt && \
     python -m nltk.downloader -d /app/nltk_data vader_lexicon punkt stopwords
 
+
 # Copy application code
 COPY . /app/
 
