@@ -20,18 +20,17 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# API endpoint
+import os
 
 def get_api_url():
-    # In Hugging Face Spaces or container environments
+    # Check if running inside a Hugging Face Space
     if os.environ.get("SPACE_ID"):
-        # Try the direct localhost first
-        return "http://127.0.0.1:5000/api"
+        return "https://nesha-macherla-company-news.hf.space/api"  # Correct public API URL
     else:
-        # Local development
-        return "http://localhost:5000/api"
+        return "http://localhost:5000/api"  # Local development
 
-API_URL = "https://nesha-macherla-company-news.hf.space/api"
+API_URL = get_api_url()
+
 
 
 # Add this after defining API_URL to help debug
