@@ -3,27 +3,30 @@
 # Print some information
 echo "Starting Company Sentiment Analyzer application..."
 
-# Set NLTK data path to a writable location
+# Set environment variables for NLTK, Matplotlib, and FontConfig
 export NLTK_DATA=/tmp/nltk_data
 mkdir -p $NLTK_DATA
 
-# Set Matplotlib config directory to a writable location
 export MPLCONFIGDIR=/tmp/matplotlib
 mkdir -p $MPLCONFIGDIR
 
-# Start Flask API in the background
+export FONTCONFIG_PATH=/etc/fonts
+mkdir -p /tmp/.cache/fontconfig
+chmod -R 777 /tmp/.cache/fontconfig
+
+# Start Flask API with Gunicorn (better performance)
 echo "Starting Flask API server..."
-python api.py &
+gunicorn -w 2 -b 0.0.0.0:5000 api:app &
 API_PID=$!
 
 # Give Flask a moment to start
 echo "Waiting for API to initialize..."
-sleep 3
+sleep 5
 
-# Start Streamlit
+# Start Streamlit frontend
 echo "Starting Streamlit frontend..."
-streamlit run app_frontend.py
+exec streamlit run app_frontend.py --server.port 8501 --server.address 0.0.0.0
 
-# If Streamlit exits, kill the Flask process
+# If Streamlit exits, clean up Flask process
 echo "Streamlit exited, cleaning up..."
 kill $API_PID
