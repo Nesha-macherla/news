@@ -25,10 +25,19 @@ from flask import Flask, request, jsonify
 from classes import NewsArticle, NewsScraper, SentimentAnalyzer, ArticleQueryEngine, DataVisualizer, TextToSpeechGenerator
 
 # Download NLTK data
+
+import tempfile
+
+# Set NLTK data path to a writable location
+nltk_data_dir = os.path.join(tempfile.gettempdir(), 'nltk_data')
+os.makedirs(nltk_data_dir, exist_ok=True)
+os.environ['NLTK_DATA'] = nltk_data_dir
+
+# Download NLTK data
 try:
-    nltk.download('vader_lexicon', quiet=True)
-    nltk.download('punkt', quiet=True)
-    nltk.download('stopwords', quiet=True)
+    nltk.download('vader_lexicon', download_dir=nltk_data_dir, quiet=True)
+    nltk.download('punkt', download_dir=nltk_data_dir, quiet=True)
+    nltk.download('stopwords', download_dir=nltk_data_dir, quiet=True)
 except Exception as e:
     print(f"Error downloading NLTK resources: {e}")
 
