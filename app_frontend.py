@@ -23,6 +23,7 @@ st.set_page_config(
 # API endpoint
 
 if os.environ.get("SPACE_ID"):
+    # Hugging Face Spaces - internal connection
     API_URL = "http://localhost:5000/api"
 else:
     # Local development
