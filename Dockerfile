@@ -5,8 +5,8 @@ WORKDIR /app
 # Set up writable directories
 ENV NLTK_DATA=/tmp/nltk_data
 ENV MPLCONFIGDIR=/tmp/matplotlib
+RUN mkdir -p /tmp/matplotlib && chmod 777 /tmp/matplotlib
 
-RUN mkdir -p /tmp/nltk_data /tmp/matplotlib && chmod 777 /tmp/nltk_data /tmp/matplotlib
 
 # Install dependencies
 COPY requirements.txt ./ 
