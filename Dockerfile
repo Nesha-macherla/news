@@ -1,26 +1,20 @@
-# Use Python base image
-FROM python:3.9
+FROM python:3.9-slim
 
-# Set working directory
 WORKDIR /app
 
-# Set environment variables
-ENV NLTK_DATA=/app/nltk_data
-ENV MPLCONFIGDIR=/tmp/matplotlib
-ENV FONTCONFIG_PATH=/etc/fonts
-
-# Install dependencies
-COPY requirements.txt /app/
+COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Download NLTK resources
-RUN python -m nltk.downloader -d /app/nltk_data vader_lexicon punkt stopwords
+COPY . .
 
-# Copy application files
-COPY . /app/
+# Download NLTK data
+RUN python -c "import nltk; nltk.download('vader_lexicon'); nltk.download('punkt'); nltk.download('stopwords')"
 
-# Expose Flask and Streamlit ports
+# Expose ports for Flask and Streamlit
 EXPOSE 5000 8501
 
-# Run API and Streamlit together
-CMD ["python", "app.py"]
+# Create a script to run both services
+RUN echo '#!/bin/bash\npython api.py &\nstreamlit run app_frontend.py' > start.sh
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]
