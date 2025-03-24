@@ -20,12 +20,13 @@ import matplotlib
 matplotlib.use('Agg')  
 
 
-import os
 
-# Set a writable directory for NLTK downloads
-NLTK_DIR = "/app/nltk_data"
+import os
+import tempfile
+
+# Use a temporary directory that's writable
+NLTK_DIR = os.path.join(tempfile.gettempdir(), 'nltk_data')
 os.makedirs(NLTK_DIR, exist_ok=True)
-nltk.data.path.append(NLTK_DIR)
 
 # Download necessary NLTK resources
 #nltk.download('vader_lexicon', download_dir=NLTK_DIR, quiet=True)
